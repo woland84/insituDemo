@@ -1,0 +1,14 @@
+To run the demo follow these steps:
+1. Check if python3 is available on your computer. Either run
+>#python --version
+Python 3.2.3
+>#python3 --version
+Python 3.2.3
+
+2. If python is not available, install it using your package manager. E.g. for Debian based systems:
+>#sudo apt-get install python3
+
+3. Adjust config.py to your local settings, most important the rasql path and the viewer program
+
+4. Run the program, i.e.
+>#python3 insituDemo.py

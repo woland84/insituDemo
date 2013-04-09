@@ -8,7 +8,9 @@ Python 3.2.3
 2. If python is not available, install it using your package manager. E.g. for Debian based systems:
 >#sudo apt-get install python3
 
-3. Adjust config.py to your local settings, most important the rasql path and the viewer program
+3. Install rasdaman enterprise using the instructions there
 
-4. Run the program, i.e.
+4. Adjust config.py to your local settings, most important the rasql path and the viewer program
+
+5. Run the program, i.e.
 >#python3 insituDemo.py

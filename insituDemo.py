@@ -2,7 +2,7 @@
 import os
 import subprocess
 
-from config import RASQL_PATH, RASQL_ADMIN_PASSWORD, RASQL_ADMIN_USERNAME, SHOW_DEBUG, VIEWER, WAITING_FOR_ACTION_MESSAGE, EARTH_COLLECTION_NAME, VOLCANO_COLLECTION_NAME, VOLCANO_DB_COLLECTION_NAME
+from config import RASQL_PATH, RASQL_ADMIN_PASSWORD, RASQL_ADMIN_USERNAME, SHOW_DEBUG, VIEWER, WAITING_FOR_ACTION_MESSAGE, EARTH_COLLECTION_NAME, VOLCANO_COLLECTION_NAME, VOLCANO_DB_COLLECTION_NAME, VOLCANO_INFRARED_COLLECTION_NAME, RASIMPORT
 
 class Colors:
     HEADER = '\033[95m'
@@ -166,7 +166,6 @@ def mixDemo():
     log("Now that we confirmed that the second image is correct we can import it into the database")
 
 
-
 def mixDemoCleanup():
     subprocess.call(["rm", "appliedVolcanoMask_1.jpg"]);
     subprocess.call(["rm", "appliedVolcanoMask_2.jpg"]);
@@ -175,16 +174,48 @@ def mixDemoCleanup():
     rasql("DROP COLLECTION {volcanoDb}".format(volcanoDb=VOLCANO_DB_COLLECTION_NAME), admin=True, noOutput=True)
 
 
+def rasimportDemo():
+    log("{}== rasimport demo =={}".format(Colors.HEADER, Colors.ENDC))
+    log(
+        "Use Case: the files that we want to import are spread over several subdirectories. Assuming the filenames are consistent "
+        "we can use a regex expression to select the files that we need using the rasimport utility.\n Furthermore rasimport can "
+        "detect the spatial domain of the images so we do not need to provide it ourselves.")
+    waitForAction();
+    createCollQuery = "CREATE COLLECTION {infraredVolcano} RGBSet".format(
+        infraredVolcano=VOLCANO_INFRARED_COLLECTION_NAME);
+    rasql(createCollQuery, admin=True)
+    log(
+        "{}rasimport -con rasimport.conf -referencing -coll {} -t RGBImage:RGBSet -d {} -regex \".*earth_infrared.*\" {}".format(
+            Colors.OKBLUE, VOLCANO_INFRARED_COLLECTION_NAME, getDataPath("volcanoSlices"), Colors.ENDC))
+    subprocess.call([RASIMPORT, "-conn", "rasimport.conf", "-coll", VOLCANO_INFRARED_COLLECTION_NAME, "-d",
+                     getDataPath("volcanoSlices"), "-t", "RGBImage:RGBSet", "-referencing", "-regex",
+                     ".*earth_infrared.*"])
+    waitForAction()
+    rasql("SELECT jpeg({volcanoInfrared}) FROM {volcanoInfrared}".format(volcanoInfrared=VOLCANO_INFRARED_COLLECTION_NAME), otherParams=["--outfile", "volcanoSlice_%d"])
+    subprocess.call([VIEWER, "volcanoSlice_3.jpg"])
+
+def rasimportCleanup():
+    for i in range(1,10):
+        subprocess.call(["rm", "volcanoSlice_{}.jpg".format(i)])
+    rasql("DROP COLLECTION {volcanoInfrared}".format(volcanoInfrared=VOLCANO_INFRARED_COLLECTION_NAME), admin=True, noOutput=True)
+
+
+
+
 def cleanup():
     earthDemoCleanup()
     volcanoDemoCleanup()
     mixDemoCleanup()
+    rasimportCleanup()
 
 
 def main():
     log("{}=== Demo for InSitu Feature ==={}".format(Colors.HEADER, Colors.ENDC))
     try:
         earthDemo()
+        waitForAction()
+        log("\n\n")
+        rasimportDemo()
         waitForAction()
         log("\n\n")
         volcanoDemo()

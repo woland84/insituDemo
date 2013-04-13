@@ -5,12 +5,14 @@ Python 3.2.3
 >#python3 --version
 Python 3.2.3
 
-2. If python is not available, install it using your package manager. E.g. for Debian based systems:
+2. If python3 is not available, install it using your package manager. E.g. for Debian based systems:
 >#sudo apt-get install python3
 
 3. Install rasdaman enterprise using the instructions there
 
-4. Adjust config.py to your local settings, most important the rasql path and the viewer program
+4. Adjust config.py to your local settings, most important the rasql path and the viewer program.
 
-5. Run the program, i.e.
+5. Adjust rasimport.conf to your local settings. (Beware, rasimport assumes that the user and password to rasdaman engine is the same for RASBASE in pgsql!)
+
+6. Run the program, i.e.
 >#python3 insituDemo.py

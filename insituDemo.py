@@ -180,6 +180,12 @@ def rasimportDemo():
         "Use Case: the files that we want to import are spread over several subdirectories. Assuming the filenames are consistent "
         "we can use a regex expression to select the files that we need using the rasimport utility.\n Furthermore rasimport can "
         "detect the spatial domain of the images so we do not need to provide it ourselves.")
+    log("For Example: ")
+    waitForAction()
+    allFiles = subprocess.check_output(["find", "data/volcanoSlices/", "-name", "*earth*"]).decode("utf-8")
+    for item in allFiles.split('\n'):
+        log("{}{}{}".format(Colors.OKBLUE, item, Colors.ENDC))
+    log("We would like to select only the infrared images")
     waitForAction();
     createCollQuery = "CREATE COLLECTION {infraredVolcano} RGBSet".format(
         infraredVolcano=VOLCANO_INFRARED_COLLECTION_NAME);
